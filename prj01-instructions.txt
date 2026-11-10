@@ -1,0 +1,43 @@
+Instructions and advise for the assignment PRJ01
+------------------------------------------------
+
+The goal of this project assignment is to extend an existing client-server application with cryptographic features implementing a given specification.
+
+The client-server application is a simple file management tool that allows a client to manipulate folders on, as well as to upload files to and to download files from a remote server via a network connection. The communication between the client and the server uses a protocol developed for the purpose of this course. It is called Simple File Transfer Protocol, or shortly SiFT. 
+
+Version 0.5 of SiFT defines a low level Message Transfer Protocol (MTP) to send and receive SiFT messages, a Login Protocol that allows the client to authenticate itself to the server via a username/password mechanism, a Commands Protocol to send folder and file commands to the server, and an Upload and a Download Protocol for file uploads and downloads. SiFT v0.5 does not have any cryptographic features, so files and passwords are transfered in plaintext via the network. 
+
+Version 0.6 of SiFT tries to add a basic level of protection requiring the use of AES-GCM by the MTP protocol. It still lacks the dynamic establishment of a shared secret between the client and the server. This will come later...
+
+You find the specifications of SiFT v0.5 and SiFT v0.6, as well as the full implementation of SiFT v0.5 on Moodle. The zip file on Moodle contains the following folders:
+
+- server: this contains the files and folders needed to run the server:
+	server.py is the server program;
+	folder siftprotocols contains the implementations of the SiFT protocols;
+	users.txt is a file that stores the user credentials;
+ 	folder 'users' is used to store the users' folders and files on the server (e.g., this is where files are saved when uploaded to the server).
+- client: this contains the files and folders needed to run the client:
+	client.py is the client program;
+	folder siftprotocols contains the implementations of the SiFT protocols (this is just a copy of the folder with the same name at the server);
+	some test files to be uploaded to the server.
+
+I recommend to play with this implementation first, to get an idea of what this client-server application is about. To do so,
+
+- unzip the zip file
+- open a terminal window and change your working directory to the server folder
+- start the server (python3 server.py) (if you want to stop the server later, press Ctrl-C)
+- open another terminal window and change your working directory to the client folder
+- start the client (python3 client.py); the client will automatiocally connect to the running server.
+
+First you need to log in. There are 3 test users already registered with the following username/password:
+- alice / aaa
+- bob / bbb
+- charlie / ccc
+
+Once you logged in, type help to get some help about the available commands. Then play with the application and observe what happens. If you upload a test file to the server as user alice, it should appear in the server/users/alice folder. There are log messages printed on the terminal console to see how the protocols process and transmit the data. You can also observe that the commands defined in the specification are used by the Commands protocol, but they are called differently in the client shell (e.g., you type ls in the shell to list the content of a folder, but this appears as an lst command in the protocol).
+
+Once you understood the functionality of the provided implementation, you can inspect the code. You can observe that the SiFT protocols (mtp, login, cmd, upl, dnl) are implemented in different classes, and these are then instantiated at the appropriate places in the program. Login, Commands, Upload, and Download all use MTP as the underlying message transfer protocol. You can also try to relate the details of the provided SiFT v0.5 specification (in the markdown file) to details of the implementation.
+
+Your task is to implement the SiFT v0.6 specification by implementing the new version of the MTP protocol that uses AES-GCM to protect SiFT messages (the other protocols remain the same). Essentially, you only need to change the python file of MTP (siftprotocols/siftmtp.py) to implement v0.6 of the protocol and slightly modify the client and server implementations (client.py and server.py) to pass a static AES key to the new MTP implementation.
+
+As usual, if you have questions, please, do not hesitate to ask them!
