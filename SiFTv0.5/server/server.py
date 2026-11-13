@@ -1,6 +1,7 @@
 #python3
 
 import sys, threading, socket, getpass
+from pathlib import Path
 from siftprotocols.siftmtp import SiFT_MTP, SiFT_MTP_Error
 from siftprotocols.siftlogin import SiFT_LOGIN, SiFT_LOGIN_Error
 from siftprotocols.siftcmd import SiFT_CMD, SiFT_CMD_Error
@@ -10,11 +11,17 @@ mtp_key = b'\x00' * 32
 class Server:
     def __init__(self):
         # ------------------------ CONFIG -----------------------------
-        self.server_usersfile = 'users.txt' 
+        # Resolve all paths relative to this script's directory so the
+        # server works regardless of the current working directory
+        # (e.g. when launched from a virtual environment or elsewhere).
+        self.base_dir = Path(__file__).resolve().parent
+        self.server_usersfile = str(self.base_dir / 'users.txt')
         self.server_usersfile_coding = 'utf-8'
         self.server_usersfile_rec_delimiter = '\n'
         self.server_usersfile_fld_delimiter = ':'
-        self.server_rootdir = './users/'
+        # Keep a trailing separator so the string concatenation used in
+        # siftcmd.py (server_rootdir + user_rootdir + ...) keeps working.
+        self.server_rootdir = str(self.base_dir / 'users') + '/'
         self.server_ip = socket.gethostbyname('localhost')
         # self.server_ip = socket.gethostbyname(socket.gethostname())
         self.server_port = 5150
