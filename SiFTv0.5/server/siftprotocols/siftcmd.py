@@ -514,11 +514,7 @@ class SiFT_CMD:
                 self.user_rootdir,
                 *self.current_dir
             )
-            print("Server root:", repr(self.server_rootdir))
-            print("User root:", repr(self.user_rootdir))
-            print("Current directory:", repr(self.current_dir))
-            print("Constructed path:", repr(path))
-            print("Path exists:", os.path.exists(path))
+
             if not os.path.exists(path):
                 raise SiFT_UPL_Error('Operation failed due to local error on server')
             else:    
