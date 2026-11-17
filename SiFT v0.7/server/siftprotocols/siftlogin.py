@@ -39,7 +39,13 @@ class SiFT_LOGIN:
     # parses a login request into a dictionary
     def parse_login_req(self, login_req):
 
-        login_req_fields = login_req.decode(self.coding).split(self.delimiter)
+        try:
+            login_req_str = login_req.decode(self.coding)
+        except UnicodeDecodeError:
+            raise SiFT_LOGIN_Error('Login request is not valid UTF-8')
+        login_req_fields = login_req_str.split(self.delimiter)
+        if len(login_req_fields) != 2 or not login_req_fields[0]:
+            raise SiFT_LOGIN_Error('Login request has an invalid format')
         login_req_struct = {}
         login_req_struct['username'] = login_req_fields[0]
         login_req_struct['password'] = login_req_fields[1]
@@ -81,10 +87,9 @@ class SiFT_LOGIN:
         except SiFT_MTP_Error as e:
             raise SiFT_LOGIN_Error('Unable to receive login request --> ' + e.err_msg)
 
-        # DEBUG 
+        # DEBUG (the login request contains the password, so it is never printed)
         if self.DEBUG:
-            print('Incoming payload (' + str(len(msg_payload)) + '):')
-            print(msg_payload[:max(512, len(msg_payload))].decode('utf-8'))
+            print('Incoming payload (' + str(len(msg_payload)) + '): <login request, not shown>')
             print('------------------------------------------')
         # DEBUG 
 
@@ -140,10 +145,9 @@ class SiFT_LOGIN:
         login_req_struct['password'] = password
         msg_payload = self.build_login_req(login_req_struct)
 
-        # DEBUG 
+        # DEBUG (the login request contains the password, so it is never printed)
         if self.DEBUG:
-            print('Outgoing payload (' + str(len(msg_payload)) + '):')
-            print(msg_payload[:max(512, len(msg_payload))].decode('utf-8'))
+            print('Outgoing payload (' + str(len(msg_payload)) + '): <login request for user ' + username + ', not shown>')
             print('------------------------------------------')
         # DEBUG 
 

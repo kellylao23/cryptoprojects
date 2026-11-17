@@ -134,7 +134,9 @@ class SiFTShell(cmd.Cmd):
                     print('Strarting upload...')
                     uplp = SiFT_UPL(mtp)
                     try:
-                        uplp.handle_upload_client(cmd_req_struct['param_1'])
+                        # read the local file at the path the user gave; the server
+                        # only receives its basename (param_1) as the remote name
+                        uplp.handle_upload_client(filepath)
                     except SiFT_UPL_Error as e:
                         print('Remote_Error: ' + e.err_msg)
                     else: 
@@ -167,8 +169,15 @@ class SiFTShell(cmd.Cmd):
                     except SiFT_DNL_Error as e:
                         print('Remote_Error: ' + e.err_msg)
                     else:
-                        # we could also check here that file_hash is equal to cmd_res_struct['result_3']
-                        print('Completed.')
+                        # verify the received file against the size and hash
+                        # announced by the server in the dnl command response
+                        local_path = cmd_req_struct['param_1']
+                        file_size = os.path.getsize(local_path)
+                        if file_hash != cmd_res_struct['result_3'] or file_size != cmd_res_struct['result_2']:
+                            os.remove(local_path)
+                            print('Local_Error: Downloaded file does not match the announced size or hash, file removed')
+                        else:
+                            print('Completed.')
 
                 else:
                     print('Canceling download...')

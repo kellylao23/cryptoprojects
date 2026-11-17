@@ -352,13 +352,18 @@ class SiFT_CMD:
         # lst
         elif cmd_req_struct['command'] == self.cmd_lst:
             path = self.server_rootdir + self.user_rootdir + '/'.join(self.current_dir)
-            if os.path.exists(path):
-                dirlist_str = ''
-                with os.scandir(path) as dirlist:
-                    for f in dirlist:
-                        if not f.name.startswith('.'):
-                            if f.is_file(): dirlist_str += f.name + '\n'
-                            elif f.is_dir(): dirlist_str += f.name + '/\n'
+            dirlist_str = None
+            if os.path.isdir(path):
+                try:
+                    dirlist_str = ''
+                    with os.scandir(path) as dirlist:
+                        for f in dirlist:
+                            if not f.name.startswith('.'):
+                                if f.is_file(): dirlist_str += f.name + '\n'
+                                elif f.is_dir(): dirlist_str += f.name + '/\n'
+                except OSError:
+                    dirlist_str = None
+            if dirlist_str is not None:
                 if dirlist_str and dirlist_str[-1] == '\n': dirlist_str = dirlist_str[:-1]
                 cmd_res_struct['result_1'] = self.res_success
                 cmd_res_struct['result_2'] = dirlist_str
@@ -375,7 +380,7 @@ class SiFT_CMD:
                     cmd_res_struct['result_2'] = 'Cannot change to directory outside of the user root directory'
                 else:
                     path = self.server_rootdir + self.user_rootdir + '/'.join(self.current_dir[:-1])
-                    if not os.path.exists(path):
+                    if not os.path.isdir(path):
                         cmd_res_struct['result_1'] = self.res_failure
                         cmd_res_struct['result_2'] = 'Directory does not exist'
                     else:                    
@@ -389,7 +394,7 @@ class SiFT_CMD:
                     path = self.server_rootdir + self.user_rootdir + '/'.join(self.current_dir)
                     if path[-1] == '/': path += dirname
                     else: path += '/' + dirname
-                    if not os.path.exists(path):
+                    if not os.path.isdir(path):
                         cmd_res_struct['result_1'] = self.res_failure
                         cmd_res_struct['result_2'] = 'Directory does not exist'
                     else:                    
