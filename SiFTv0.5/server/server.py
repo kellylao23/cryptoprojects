@@ -1,5 +1,6 @@
 #python3
 
+import os
 import sys, threading, socket, getpass
 from siftprotocols.siftmtp import SiFT_MTP, SiFT_MTP_Error
 from siftprotocols.siftlogin import SiFT_LOGIN, SiFT_LOGIN_Error
@@ -69,7 +70,11 @@ class Server:
         cmdp = SiFT_CMD(mtp)
         cmdp.set_server_rootdir(self.server_rootdir)
         cmdp.set_user_rootdir(users[user]['rootdir'])
-
+        
+        os.makedirs(
+            os.path.join(cmdp.server_rootdir, cmdp.user_rootdir),
+            exist_ok=True
+        )
         while True:
             try:
                 cmdp.receive_command()

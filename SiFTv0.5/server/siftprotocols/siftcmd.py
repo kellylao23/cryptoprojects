@@ -508,7 +508,17 @@ class SiFT_CMD:
         if not self.check_fdname(filename):
             raise SiFT_DNL_Error('File name is empty, starts with . or contains unsupported characters')
         else:
-            path = self.server_rootdir + self.user_rootdir + '/'.join(self.current_dir)
+            
+            path = os.path.join(
+                self.server_rootdir,
+                self.user_rootdir,
+                *self.current_dir
+            )
+            print("Server root:", repr(self.server_rootdir))
+            print("User root:", repr(self.user_rootdir))
+            print("Current directory:", repr(self.current_dir))
+            print("Constructed path:", repr(path))
+            print("Path exists:", os.path.exists(path))
             if not os.path.exists(path):
                 raise SiFT_UPL_Error('Operation failed due to local error on server')
             else:    
