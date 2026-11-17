@@ -1,0 +1,19 @@
+Instructions and advise for the assignment PRJ02
+------------------------------------------------
+
+The goal of this project assignment is to extend your existing SiFT v0.6 protocol with a new sub-protocol called Init Protocol, the main responsibilities of which are (i) the establishment of a fresh shared secret between the client and server, (ii) the derivation of a 32-byte AES key from the shared secret, and (iii) the passing of the derived key to the MTP sub-protocol, which should then replace its initial static key with this freshly derived key. SiFT v0.6 extended with this new Init Protocol will be SiFT v0.7.
+
+Your task is (i) to design a secure Init Protocol, (ii) to produce its detailed specification in the style and format of the specifications used in the previous project assignment (i.e., SiFT v0.5 and v0.6), and (iii) to implement SiFT v0.7 (i.e., add your implementation of your Init Protocol to your exisiting SiFT v0.6 implementation to produce your implementation of SiFT v0.7).
+
+In your design, you must respect the following assumptions and requirements:
+
+(0) The shared secret establsihment must be secure; and we deliberately leave this a bit vague, so please specifiy what security guaranteess you want to achieve and why.
+
+(1) The server can be assumed to have a long-term public key PK_srv; and we make no restrictions on what type of key it is and what purpose exactly it should be used in Init.
+
+(2) The Init Protocol should provide some means to transfer PK_srv from the server to the client. The client should display the SHA256 hash of PK_srv to the user, giving them the possibility to reject or to accept the server's key based on inspecting its hash.
+
+(3) The client should still authenticate itself to the server using the original username/password mechanism of the exisiting Login Protocol.
+
+As a solution to this assignment, you should submit a single zip file containing a "SiFT v0.7" folder, which contains your specification and implementation of SiFT v0.7. The implementation should be complete in the sense that, by extracting the "SiFT v0.7" folder from the zip file, I should get everything ready to be executed locally (i.e., starting the server.py and client.py scripts on the same computer should result in a working application). Following the standard practice, the server's private key should be exported and saved in a file under the protection of a passphrase in your implementation. For allowing me to run your server, use the passphrase "ait-budapest".
+
